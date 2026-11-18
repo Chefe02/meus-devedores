@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Meus Devedores – Controle de Dívidas</title>
+
+<!-- Configurações para PWA / Instalação -->
+<meta name="theme-color" content="#050505">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Devedores">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='25' fill='%2322e07a'/><text x='50' y='62' font-size='45' font-weight='bold' text-anchor='middle' fill='%23021a0d'>R$</text></svg>">
+
+<!-- Manifesto embutido via Data URI -->
+<link rel="manifest" href='data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22Meus%20Devedores%22%2C%22short_name%22%3A%22Devedores%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23050505%22%2C%22theme_color%22%3A%22%2322e07a%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20rx%3D%2725%27%20fill%3D%27%252322e07a%27%2F%3E%3Ctext%20x%3D%2750%27%20y%3D%2762%27%20font-size%3D%2745%27%20font-weight%3D%27bold%27%20text-anchor%3D%27middle%27%20fill%3D%27%2523021a0d%27%3ER%24%3C%2Ftext%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2svg%2Bxml%22%7D%5D%7D'>
+
+<style>
+:root{--bg:#050505;--card:#111413;--card2:#181c1a;--line:#232927;--txt:#f2f5f3;--mut:#8a9690;--g:#22e07a;--g2:#0fa957;--red:#ff4d5e;--yel:#ffc53d;--blue:#4da3ff;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:radial-gradient(900px 400px at 50% -100px,#0b2a1a 0,var(--bg) 70%) no-repeat,var(--bg);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh}
+.wrap{max-width:980px;margin:0 auto;padding:18px 16px 110px}
+header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:18px}
+h1{font-size:19px;margin:0;letter-spacing:.5px}h1 small{display:block;color:var(--g);font-size:11px;font-weight:600;letter-spacing:2px}
+.logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--g),var(--g2));display:grid;place-items:center;color:#021a0d;font-weight:800;margin-right:10px}
+.hl{display:flex;align-items:center}
+.btn{border:0;border-radius:12px;padding:11px 16px;font-weight:700;font-size:14px;cursor:pointer;color:var(--txt);background:var(--card2);border:1px solid var(--line)}
+.btn.p{background:linear-gradient(135deg,var(--g),var(--g2));color:#03160b;border:0}
+.btn.d{color:var(--red)}.btn.s{padding:7px 11px;font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(min-width:760px){.grid{grid-template-columns:repeat(4,1fr)}}
+.card{background:linear-gradient(160deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:18px;padding:16px}
+.stat small{color:var(--mut);font-size:12px}.stat b{display:block;font-size:21px;margin-top:6px}
+.g{color:var(--g)}.r{color:var(--red)}.y{color:var(--yel)}.b{color:var(--blue)}
+h2{font-size:15px;margin:24px 0 10px;color:var(--mut);text-transform:uppercase;letter-spacing:1px}
+.alerts{display:grid;gap:10px}@media(min-width:760px){.alerts{grid-template-columns:repeat(3,1fr)}}
+.al{border-left:4px solid}.al.r{border-color:var(--red)}.al.y{border-color:var(--yel)}.al.b{border-color:var(--blue)}
+.al h3{margin:0 0 8px;font-size:13px}.al div.i{display:flex;justify-content:space-between;font-size:13px;padding:3px 0;cursor:pointer}
+.al .e{color:var(--mut);font-size:12px}
+.tabs{display:flex;gap:8px;overflow:auto;margin-bottom:12px}
+.tab{padding:8px 14px;border-radius:99px;border:1px solid var(--line);background:none;color:var(--mut);font-weight:600;cursor:pointer;white-space:nowrap}
+.tab.on{background:var(--g);color:#03160b;border-color:var(--g)}
+.list{display:grid;gap:12px}@media(min-width:760px){.list{grid-template-columns:1fr 1fr}}
+.dev{cursor:pointer;transition:.15s}.dev:hover{border-color:var(--g2);transform:translateY(-2px)}
+.dev.late{border-color:var(--red);background:linear-gradient(160deg,#2a1014,#140a0b)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.name{font-weight:700;font-size:16px}.mut{color:var(--mut);font-size:12px}
+.badge{font-size:11px;font-weight:700;padding:4px 9px;border-radius:99px}
+.badge.r{background:#3a1218}.badge.y{background:#3a2d0c}.badge.b{background:#0f2540}.badge.g{background:#0d3320}
+.bar{height:7px;background:#222927;border-radius:9px;margin:12px 0 8px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--g2),var(--g))}
+.money{font-size:22px;font-weight:800}
+.empty{text-align:center;color:var(--mut);padding:36px 10px}
+.fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:5;box-shadow:0 8px 30px #22e07a55;padding:15px 22px;border-radius:99px}
+.btn-install { display: none; background: var(--card2); border: 1px solid var(--g); color: var(--g); margin-bottom: 12px; width: 100%; justify-content: center; align-items: center; gap: 8px; }
+.ov{position:fixed;inset:0;background:#000c;z-index:10;display:flex;align-items:flex-end;justify-content:center;overflow:auto}
+@media(min-width:760px){.ov{align-items:center}}
+.modal{background:var(--card);border:1px solid var(--line);width:100%;max-width:560px;max-height:94vh;overflow:auto;border-radius:22px 22px 0 0;padding:20px}
+@media(min-width:760px){.modal{border-radius:22px}}
+label{display:block;font-size:12px;color:var(--mut);margin:12px 0 5px}
+input,textarea{width:100%;background:#0b0e0d;border:1px solid var(--line);color:var(--txt);border-radius:12px;padding:12px;font-size:15px;font-family:inherit}
+input:focus,textarea:focus{outline:2px solid var(--g2);border-color:transparent}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pay{display:flex;gap:8px;margin:10px 0}.pay input{flex:1}
+.hist{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.hist:last-child{border:0}
+.acts{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.x{float:right;background:none;border:0;color:var(--mut);font-size:24px;cursor:pointer}
+.big{font-size:30px;font-weight:800}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="hl"><div class="logo">R$</div><h1>MEUS DEVEDORES<small>CONTROLE DE DÍVIDAS</small></h1></div>
+    <button class="btn" onclick="showLog()">Movimentações</button>
+  </header>
+  
+  <button id="btnInstall" class="btn btn-install" onclick="installApp()">📥 Instalar Aplicativo / Criar Atalho</button>
+
+  <div id="app"></div>
+</div>
+<button class="btn p fab" onclick="personForm()">+ Nova pessoa</button>
+<div id="ov"></div>
+
+<script>
+var KEY="meus-devedores-v1",S={people:[],log:[]},filter="todos";
+try{var raw=localStorage.getItem(KEY);if(raw)S=JSON.parse(raw)}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+var uid=function(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)};
+var brl=function(v){return(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})};
+var esc=function(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})};
+function today(){var d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function fd(s){if(!s)return"—";var p=s.split("-");return p[2]+"/"+p[1]+"/"+p[0]}
+function days(s){return Math.round((new Date(s+"T00:00:00")-new Date(today()+"T00:00:00"))/864e5)}
+function paid(p){return p.payments.reduce(function(a,x){return a+x.amount},0)}
+function bal(p){return Math.max(0,Math.round((p.total-paid(p))*100)/100)}
+function status(p){if(bal(p)<=0)return"quitado";if(!p.due)return"futuro";var d=days(p.due);return d<0?"atrasado":d===0?"hoje":"futuro"}
+function addLog(t){S.log.unshift({id:uid(),ts:new Date().toISOString(),text:t})}
+function parseMoney(v){v=String(v).trim().replace(/R\$|\s/g,"");if(v.indexOf(",")>-1)v=v.replace(/\./g,"").replace(",",".");var n=parseFloat(v);return isNaN(n)?0:Math.round(Math.abs(n)*100)/100}
+function badge(p){var s=status(p),d=p.due?days(p.due):0;
+ if(s==="quitado")return'<span class="badge g">Quitado</span>';
+ if(s==="atrasado")return'<span class="badge r">Atrasado '+Math.abs(d)+' dia'+(Math.abs(d)>1?"s":"")+'</span>';
+ if(s==="hoje")return'<span class="badge y">Vence hoje</span>';
+ return'<span class="badge b">'+(p.due?"Em "+d+" dia"+(d>1?"s":""):"Sem prazo")+'</span>'}
+
+function render(){
+ var P=S.people,open=P.filter(function(p){return bal(p)>0});
+ var receber=P.reduce(function(a,p){return a+bal(p)},0),recebido=P.reduce(function(a,p){return a+Math.min(paid(p),p.total)},0);
+ var late=P.filter(function(p){return status(p)==="atrasado"}),td=P.filter(function(p){return status(p)==="hoje"}),fut=P.filter(function(p){return status(p)==="futuro"&&p.due});
+ function al(cls,t,arr,fn){return'<div class="card al '+cls+'"><h3 class="'+cls+'">'+t+' ('+arr.length+')</h3>'+(arr.length?arr.map(function(p){return'<div class="i" onclick="profile(\''+p.id+'\')"><span>'+esc(p.name)+'</span><span>'+brl(bal(p))+' <span class="e">'+fn(p)+'</span></span></div>'}).join(""):'<div class="e">Ninguém</div>')+'</div>'}
+ var list=P.filter(function(p){return filter==="todos"||(filter==="quitado"?status(p)==="quitado":status(p)===filter)});
+ list.sort(function(a,b){var o={atrasado:0,hoje:1,futuro:2,quitado:3};return o[status(a)]-o[status(b)]||(a.due||"9").localeCompare(b.due||"9")});
+ var tabs=[["todos","Todos"],["atrasado","Atrasados"],["hoje","Hoje"],["futuro","Futuros"],["quitado","Quitados"]];
+ document.getElementById("app").innerHTML=
+ '<div class="grid">'+
+ '<div class="card stat"><small>A receber</small><b class="g">'+brl(receber)+'</b></div>'+
+ '<div class="card stat"><small>Já recebido</small><b>'+brl(recebido)+'</b></div>'+
+ '<div class="card stat"><small>Pessoas devendo</small><b>'+open.length+'</b></div>'+
+ '<div class="card stat"><small>Pagamentos atrasados</small><b class="'+(late.length?"r":"")+'">'+late.length+'</b></div></div>'+
+ '<h2>Alertas</h2><div class="alerts">'+
+ al("r","Atrasados",late,function(p){return Math.abs(days(p.due))+"d"})+
+ al("y","Pagam hoje",td,function(){return"hoje"})+
+ al("b","Pagamentos futuros",fut,function(p){return fd(p.due)})+'</div>'+
+ '<h2>Devedores</h2><div class="tabs">'+tabs.map(function(t){return'<button class="tab '+(filter===t[0]?"on":"")+'" onclick="filter=\''+t[0]+'\';render()">'+t[1]+'</button>'}).join("")+'</div>'+
+ (list.length?'<div class="list">'+list.map(function(p){var pct=p.total>0?Math.min(100,paid(p)/p.total*100):100;
+  return'<div class="card dev '+(status(p)==="atrasado"?"late":"")+'" onclick="profile(\''+p.id+'\')"><div class="row"><div><div class="name">'+esc(p.name)+'</div><div class="mut">Vence: '+fd(p.due)+'</div></div>'+badge(p)+'</div>'+
+  '<div class="bar"><i style="width:'+pct+'%"></i></div><div class="row"><div><div class="mut">Falta pagar</div><div class="money '+(status(p)==="atrasado"?"r":"g")+'">'+brl(bal(p))+'</div></div><div class="mut" style="text-align:right">Pago '+brl(paid(p))+'<br>de '+brl(p.total)+'</div></div></div>'}).join("")+'</div>'
+ :'<div class="card empty">'+(P.length?"Nenhum devedor neste filtro.":"Nenhuma pessoa cadastrada ainda.<br>Toque em “+ Nova pessoa” para começar.")+'</div>');
+}
+function close_(){document.getElementById("ov").innerHTML=""}
+function modal(h){var o=document.getElementById("ov");o.innerHTML='<div class="ov" onclick="if(event.target===this)close_()"><div class="modal">'+h+'</div></div>'}
+function find(id){return S.people.filter(function(p){return p.id===id})[0]}
+
+function personForm(id){var p=id?find(id):{name:"",total:"",borrowed:today(),due:"",notes:""};
+ modal('<button class="x" onclick="close_()">×</button><h2 style="margin:0 0 4px;color:var(--txt)">'+(id?"Editar pessoa":"Nova pessoa")+'</h2>'+
+ '<label>Nome *</label><input id="f_name" value="'+esc(p.name)+'" placeholder="Nome da pessoa">'+
+ '<label>Valor total devido (R$) *</label><input id="f_total" inputmode="decimal" value="'+(p.total===""?"":String(p.total).replace(".",","))+'" placeholder="0,00">'+
+ '<div class="two"><div><label>Data que pegou</label><input id="f_b" type="date" value="'+p.borrowed+'"></div><div><label>Pagar até</label><input id="f_d" type="date" value="'+p.due+'"></div></div>'+
+ '<label>Observações</label><textarea id="f_n" rows="3">'+esc(p.notes)+'</textarea>'+
+ '<div class="acts"><button class="btn p" onclick="savePerson(\''+(id||"")+'\')">Salvar</button><button class="btn" onclick="'+(id?"profile('"+id+"')":"close_()")+'">Cancelar</button></div>')}
+function savePerson(id){var name=f_name.value.trim(),total=parseMoney(f_total.value);
+ if(!name){alert("Informe o nome.");return}if(!total){alert("Informe o valor devido.");return}
+ var d={name:name,total:total,borrowed:f_b.value,due:f_d.value,notes:f_n.value.trim()};
+ if(id){var p=find(id);Object.assign(p,d);addLog("Editou o cadastro de "+name)}
+ else{S.people.push(Object.assign({id:uid(),payments:[]},d));addLog("Cadastrou "+name+" com dívida de "+brl(total))}
+ save();render();id?profile(id):close_()}
+
+function profile(id){var p=find(id);if(!p)return;var pay=p.payments.slice().reverse();
+ modal('<button class="x" onclick="close_()">×</button><div class="name" style="font-size:20px">'+esc(p.name)+'</div><div class="mut">'+'Pegou em '+fd(p.borrowed)+'</div><div style="margin:8px 0">'+badge(p)+'</div>'+
+ '<div class="card" style="margin:12px 0"><div class="mut">Falta pagar</div><div class="big '+(status(p)==="atrasado"?"r":"g")+'">'+brl(bal(p))+'</div></div>'+
+ '<div class="two"><div class="card"><div class="mut">Dívida inicial</div><b>'+brl(p.total)+'</b></div><div class="card"><div class="mut">Já pagou</div><b class="g">'+brl(paid(p))+'</b></div></div>'+
+ '<div class="card" style="margin-top:12px"><div class="mut">Próximo pagamento</div><b>'+(bal(p)>0?fd(p.due):"Dívida quitada")+'</b></div>'+
+ (p.notes?'<div class="mut" style="margin-top:12px">Obs.: '+esc(p.notes)+'</div>':'')+
+ '<label>Registrar pagamento (ex.: 50 ou -20 — ambos abatem da dívida)</label><div class="pay"><input id="pv" inputmode="text" placeholder="Ex.: 50 ou -20" onkeydown="if(event.key===\'Enter\')addPay(\''+id+'\')"><button class="btn p" onclick="addPay(\''+id+'\')">Abater</button></div>'+
+ '<h2>Histórico de pagamentos</h2>'+(pay.length?pay.map(function(x){return'<div class="hist"><div><b class="g">− '+brl(x.amount)+'</b><div class="mut">'+fd(x.date)+'</div></div><div><button class="btn s" onclick="editPay(\''+id+'\',\''+x.id+'\')">Corrigir</button> <button class="btn s d" onclick="delPay(\''+id+'\',\''+x.id+'\')">Excluir</button></div></div>'}).join(""):'<div class="mut">Nenhum pagamento registrado.</div>')+
+ '<div class="acts"><button class="btn" onclick="personForm(\''+id+'\')">Editar</button><button class="btn d" onclick="delPerson(\''+id+'\')">Excluir pessoa</button></div>')}
+function addPay(id){var p=find(id),v=parseMoney(pv.value);if(!v){alert("Digite um valor válido, como 50 ou -20.");return}
+ if(v>bal(p)&&!confirm("O valor ("+brl(v)+") é maior que o saldo ("+brl(bal(p))+"). Registrar mesmo assim?"))return;
+ p.payments.push({id:uid(),amount:v,date:today()});addLog(p.name+" pagou "+brl(v)+" — saldo: "+brl(bal(p)));save();render();profile(id)}
+function editPay(id,pid){var p=find(id),x=p.payments.filter(function(y){return y.id===pid})[0];
+ var v=prompt("Corrigir valor do pagamento (R$):",String(x.amount).replace(".",","));if(v===null)return;var n=parseMoney(v);if(!n){alert("Valor inválido.");return}
+ addLog("Corrigiu pagamento de "+p.name+": "+brl(x.amount)+" → "+brl(n));x.amount=n;save();render();profile(id)}
+function delPay(id,pid){var p=find(id),x=p.payments.filter(function(y){return y.id===pid})[0];if(!confirm("Excluir este pagamento de "+brl(x.amount)+"?"))return;
+ p.payments=p.payments.filter(function(y){return y.id!==pid});addLog("Excluiu pagamento de "+brl(x.amount)+" de "+p.name);save();render();profile(id)}
+function delPerson(id){var p=find(id);if(!confirm("Excluir "+p.name+" e todo o histórico dessa pessoa?"))return;
+ S.people=S.people.filter(function(y){return y.id!==id});addLog("Excluiu "+p.name);save();render();close_()}
+function showLog(){modal('<button class="x" onclick="close_()">×</button><h2 style="margin:0 0 8px;color:var(--txt)">Todas as movimentações</h2>'+
+ (S.log.length?S.log.map(function(l){var d=new Date(l.ts);return'<div class="hist"><div>'+esc(l.text)+'</div><div class="mut" style="white-space:nowrap">'+d.toLocaleDateString("pt-BR")+" "+d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+'</div></div>'}).join(""):'<div class="mut">Nada registrado ainda.</div>'))}
+
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('btnInstall').style.display = 'flex';
+});
+
+function installApp() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') {
+        document.getElementById('btnInstall').style.display = 'none';
+      }
+      deferredPrompt = null;
+    });
+  } else {
+    alert('Para instalar no seu celular:\n\n• No Android (Chrome): Toque nos 3 pontos do menu e selecione "Adicionar à tela inicial" ou "Instalar aplicativo".\n• No iPhone (Safari): Toque no botão Compartilhar e selecione "Adicionar à Tela de Início".');
+  }
+}
+
+render();
+</script>
+</body>
+</html>
